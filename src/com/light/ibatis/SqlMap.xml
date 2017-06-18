@@ -1,0 +1,714 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL MAP 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+
+
+<sqlMap namespace="msg">
+
+	<resultMap id="CT" class="com.light.vo.CtVO">
+		<result column="CT_CD" property="ctCd" />
+		<result column="CT_HT" property="ctHt" />
+		<result column="CT_PP" property="ctPp" />
+		<result column="CT_DT" property="ctDt" />
+		<result column="CT_MEM" property="ctMem" />
+	</resultMap>
+
+	<resultMap id="FD" class="com.light.vo.FdVO">
+		<result column="FD_REG_NUM" property="fdRegnum" />
+		<result column="FD_GR" property="fdGr" />
+		<result column="FD_LT" property="fdLt" />
+		<result column="FD_MEM" property="fdMem" />
+	</resultMap>
+
+	<resultMap id="MEM" class="com.light.vo.MemVO">
+		<result column="MEM_ID" property="memId" />
+		<result column="MEM_IMG" property="memImg" />
+		<result column="MEM_EM" property="memEmail" />
+		<result column="MEM_PW" property="memPw" />
+		<result column="MEM_ADD" property="memAdd" />
+		<result column="MEM_NM" property="memNm" />
+		<result column="MEM_PHO_NUM" property="memPhonum" />
+		<result column="MEM_GN" property="memGn" />
+		<result column="MEM_NIC" property="memNic" />
+		<result column="MEM_BIR" property="memBir" />
+		<result column="MEM_WRL_WTR" property="memWrlwtr" />
+
+	</resultMap>
+
+	<resultMap id="GBK" class="com.light.vo.GbkVO">
+		<result column="ROWNUM" property="gbkRownum" />
+		<result column="GBK_NUM" property="gbkNum" />
+		<result column="GBK_CON" property="gbkCon" />
+		<result column="GBK_WRI_DT" property="gbkWridt" />
+		<result column="GBK_MEM" property="gbkMem" />
+		<result column="GBK_WRI_MEM" property="gbkWrimem" />
+		<result column="GBK_PT_KID" property="gbkPtkid" />
+		<result column="GBK_HP" property="gbkHp" />
+		<result column="GBK_TIT" property="gbkTit" />
+	</resultMap>
+
+
+	<resultMap id="IMG" class="com.light.vo.ImgVO">
+	    <result column="ROWNUM" property="imgfraRownum" />
+		<result column="IMG_FRA_NUM" property="imgfraNum" />
+		<result column="IMG_FRA_TIT" property="imgfraTit" />
+		<result column="IMG_FRA_DT" property="imgfraDt" />
+		<result column="IMG_FRA_IMG" property="imgfraImg" />
+		<result column="IMG_FRA_CON" property="imgfraCon" />
+		<result column="IMG_FRA_WRI_MEM" property="imgfraWrimem" />
+		<result column="IMG_FRA_PT_KID" property="imgfraPtkid" />
+		<result column="IMG_FRA_MEM" property="imgfraMem" />
+		<result column="IMG_FRA_HP" property="imgfraHp" />
+	</resultMap>
+
+	<resultMap id="DIA" class="com.light.vo.DiaVO">
+		<result column="ROWNUM" property="diaRownum" />
+		<result column="DIA_NUM" property="diaNum" />
+		<result column="DIA_TIT" property="diaTit" />
+		<result column="DIA_CON" property="diaCon" />
+		<result column="DIA_WRI_DT" property="diaWridt" />
+		<result column="DIA_WRI_MEM" property="diaWrimem" />
+		<result column="DIA_PT_KID" property="diaPtkid" />
+		<result column="DIA_MEM" property="diaMem" />
+		<result column="DIA_HP" property="diaHp" />
+	</resultMap>
+
+	<resultMap id="HP" class="com.light.vo.HpVO">
+		<result column="HP_CD" property="hpCd" />
+		<result column="HP_CRE_DT" property="hpCredt" />
+		<result column="HP_MA_WRT" property="hpMawrt" />
+		<result column="HP_STT_WRT" property="hpSttwrt" />
+		<result column="HP_CLO" property="hpClo" />
+		<result column="HP_MEM" property="hpMem" />
+	</resultMap>
+
+	<resultMap id="MSG" class="com.light.vo.MsgVO">
+		<result column="ROWNUM" property="msgRownum" />
+		<result column="MSG_NUM" property="msgNum" />
+		<result column="MSG_DT" property="msgDt" />
+		<result column="MSG_SEN_MEM" property="msgSenmem" />
+		<result column="MSG_REC_MEM" property="msgRecmem" />
+		<result column="MSG_HT" property="msgHt" />
+		<result column="MSG_MEM" property="msgMem" />
+		<result column="MSG_WTR" property="msgWtr" />
+	</resultMap>
+	
+	<resultMap id ="SQ" class="com.light.vo.NumVO">
+      <result column="LAST_NUMBER" property="sequence"/>
+   </resultMap>
+       
+
+	<!-- select쿼리 - resultMap을 TestResult로 설정 -->
+	
+	<select id="selectSq" resultMap="SQ">
+      SELECT LAST_NUMBER 
+      FROM user_sequences
+      WHERE SEQUENCE_NAME = 'S_IMG_FRA'
+   </select>
+   
+	<select id="selectCt" parameterClass="java.util.HashMap"
+		resultMap="CT">
+		SELECT
+		*
+		FROM
+		CT
+		WHERE CT_PP LIKE '%'||#ctPp#||'%'
+		AND CT_MEM = #ctMem#
+	</select>
+
+	<select id="selectFd" parameterClass="java.util.HashMap"
+		resultMap="FD">
+		SELECT A.*
+		FROM (SELECT
+		FD_REG_NUM, FD_GR, FD_MEM, FD_LT
+		FROM
+		FD, MEM
+    	WHERE FD_MEM = #fdMem#
+    	AND FD_LT = MEM_ID
+    	AND MEM_WRL_WTR = 'YES'
+		<isNotEmpty property="fdRegnum" prepend="AND">
+			FD_REG_NUM =
+			#fdRegnum#
+		</isNotEmpty>
+		<isNotEmpty property="fdGr" prepend="AND">
+			FD_GR = #fdGr#
+		</isNotEmpty>
+		<isNotEmpty property="fdLt" prepend="AND">
+			FD_LT = #fdLt#
+		</isNotEmpty>
+		<isNotEmpty property="fdMem" prepend="AND">
+			FD_MEM = #fdMem#
+		</isNotEmpty>
+    	) A
+	</select>
+
+
+	<select id="selectMem" parameterClass="java.util.HashMap"
+		resultMap="MEM">
+		SELECT
+		*
+		FROM
+		MEM
+		WHERE 1=1
+		<isNotEmpty property="memId" prepend="AND">
+			MEM_ID = #memId#
+		</isNotEmpty>
+		<isNotEmpty property="memImg" prepend="AND">
+			MEM_IMG = #memImg#
+		</isNotEmpty>
+		<isNotEmpty property="memEmail" prepend="AND">
+			MEM_EM = #memEmail#
+		</isNotEmpty>
+		<isNotEmpty property="memPw" prepend="AND">
+			MEM_PW = #memPw#
+		</isNotEmpty>
+		<isNotEmpty property="memAdd" prepend="AND">
+			MEM_ADD = #memAdd#
+		</isNotEmpty>
+		<isNotEmpty property="memNm" prepend="AND">
+			MEM_NM = #memNm#
+		</isNotEmpty>
+		<isNotEmpty property="memPhonum" prepend="AND">
+			MEM_PHO_NUM =
+			#memPhonum#
+		</isNotEmpty>
+		<isNotEmpty property="memGn" prepend="AND">
+			MEM_GN = #memGn#
+		</isNotEmpty>
+		<isNotEmpty property="memNic" prepend="AND">
+			MEM_NIC = #memNic#
+		</isNotEmpty>
+		<isNotEmpty property="memWrlwtr" prepend="AND">
+			MEM_WRL_WTR =
+			#memWrlwtr#
+		</isNotEmpty>
+
+	</select>
+
+	<select id="selectGbk" parameterClass="java.util.HashMap"
+		resultMap="GBK">
+		SELECT B.* FROM(
+						SELECT ROWNUM ,A.* 
+						FROM (SELECT * 
+							  FROM GBK 
+							  WHERE 1=1
+							  <isNotEmpty property="gbkMem" prepend="AND">
+							   GBK_MEM = #gbkMem#
+							  </isNotEmpty>
+							  <isNotEmpty property="gbkRownum" prepend="AND">
+									ROWNUM = #gbkRownum#
+								</isNotEmpty>
+								<isNotEmpty property="gbkNum" prepend="AND">
+									GBK_NUM = #gbkNum#
+								</isNotEmpty>
+								<isNotEmpty property="gbkCon" prepend="AND">
+									GBK_CON = #gbkCon#
+								</isNotEmpty>
+								<isNotEmpty property="gbkWrimem" prepend="AND">
+									GBK_WRI_MEM = #gbkWrimem#
+								</isNotEmpty>
+								<isNotEmpty property="gbkPtkid" prepend="AND">
+									GBK_PT_KID = #gbkPtkid#
+								</isNotEmpty>
+								<isNotEmpty property="gbkHp" prepend="AND">
+									GBK_HP = #gbkHp#
+								</isNotEmpty>
+								<isNotEmpty property="gbkTit" prepend="AND">
+									GBK_TIT = #gbkTit#
+								</isNotEmpty>
+			ORDER BY GBK_NUM) A
+		 ) B
+	</select>
+	
+
+
+	<select id="selectImg" parameterClass="java.util.HashMap"
+		resultMap="IMG">
+		SELECT B.* FROM(
+						SELECT ROWNUM ,A.* 
+						FROM (SELECT * 
+							  FROM IMG_FRA 
+							  WHERE 1=1
+							  <isNotEmpty property="imgfraMem" prepend="AND">
+							  IMG_FRA_MEM = #imgfraMem#
+							  </isNotEmpty>
+							  <isNotEmpty property="imgRownum" prepend="AND">
+									ROWNUM = #imgRownum#
+								</isNotEmpty>
+								<isNotEmpty property="imgfraNum" prepend="AND">
+									IMG_FRA_NUM = 	#imgfraNum#
+								</isNotEmpty>
+								<isNotEmpty property="imgfraTit" prepend="AND">
+									IMG_FRA_TIT = #imgfraTit#
+								</isNotEmpty>
+								<isNotEmpty property="imgfraImg" prepend="AND">
+									IMG_FRA_IMG = #imgfraImg#
+								</isNotEmpty>
+								<isNotEmpty property="imgfraCon" prepend="AND">
+									IMG_FRA_CON = #imgfraCon#
+								</isNotEmpty>
+								<isNotEmpty property="imgfraWrimem" prepend="AND">
+									IMG_FRA_WRI_MEM = #imgfraWrimem#
+								</isNotEmpty>
+								<isNotEmpty property="imgfraPtkid" prepend="AND">
+									IMG_FRA_PT_KID = #imgfraPtkid#
+								</isNotEmpty>
+								<isNotEmpty property="imgfraHp" prepend="AND">
+									IMG_FRA_HP = #imgfraHp#
+								</isNotEmpty>
+							 ORDER BY IMG_FRA_NUM) A
+		) B
+		WHERE 1=1
+		
+	</select>
+	
+
+	<select id="selectDia" parameterClass="java.util.HashMap"
+		resultMap="DIA">
+		SELECT B.* FROM(
+						SELECT ROWNUM ,A.* 
+						FROM (SELECT * 
+							  FROM DIA
+							  WHERE 1=1
+							  <isNotEmpty property="diaMem" prepend="AND">
+							  DIA_MEM = #diaMem#
+							  </isNotEmpty>
+							  <isNotEmpty property="diaRownum" prepend="AND">
+									ROWNUM = #diaRownum#
+								</isNotEmpty>
+								<isNotEmpty property="diaNum" prepend="AND">
+									DIA_NUM = #diaNum#
+								</isNotEmpty>
+								<isNotEmpty property="diaTit" prepend="AND">
+									DIA_TIT = #diaTit#
+								</isNotEmpty>
+								<isNotEmpty property="diaCon" prepend="AND">
+									DIA_CON = #diaCon#
+								</isNotEmpty>
+								<isNotEmpty property="diaWrimem" prepend="AND">
+									DIA_WRI_MEM = #diaWrimem#
+								</isNotEmpty>
+								<isNotEmpty property="diaPtkid" prepend="AND">
+									DIA_PT_KID = #diaPtkid#
+								</isNotEmpty>
+								<isNotEmpty property="diaHp" prepend="AND">
+									DIA_HP = #diaHp#
+								</isNotEmpty>
+							  
+							  ORDER BY DIA_NUM) A
+		) B
+	</select>
+	
+
+	<select id="selectHp" parameterClass="java.util.HashMap"
+		resultMap="HP">
+		SELECT
+		*
+		FROM
+		HP
+		WHERE 1=1
+		<isNotEmpty property="hpCd" prepend="AND">
+			HP_CD = #hpCd#
+		</isNotEmpty>
+		<isNotEmpty property="hpMawrt" prepend="AND">
+			HP_MA_WRT = #hpMawrt#
+		</isNotEmpty>
+		<isNotEmpty property="hpSttwrt" prepend="AND">
+			HP_STT_WRT = #hpSttwrt#
+		</isNotEmpty>
+		<isNotEmpty property="hpClo" prepend="AND">
+			HP_CLO = #hpClo#
+		</isNotEmpty>
+		<isNotEmpty property="hpMem" prepend="AND">
+			HP_MEM = #hpMem#
+		</isNotEmpty>
+
+	</select>
+
+	<select id="selectMsg" parameterClass="java.util.HashMap"
+		resultMap="MSG">
+	SELECT B.* FROM(
+						SELECT ROWNUM ,A.* 
+						FROM (SELECT * 
+							  FROM MSG
+                 			  WHERE 1=1
+                 			  <isNotEmpty property="msgNum" prepend="AND">
+								  MSG_NUM =
+								  #msgNum#
+							  </isNotEmpty>
+							  <isNotEmpty property="msgSenmem" prepend="AND">
+								  MSG_SEN_MEM =
+								  #msgSenmem#
+							  </isNotEmpty>
+							  <isNotEmpty property="msgRecmem" prepend="AND">
+								  MSG_REC_MEM =
+								  #msgRecmem#
+							  </isNotEmpty>
+							  <isNotEmpty property="megHt" prepend="AND">
+							      MSG_HT = #msgHt#
+							  </isNotEmpty>
+							  <isNotEmpty property="msgMem" prepend="AND">
+								  MSG_MEM = #msgMem#
+							  </isNotEmpty>
+							  <isNotEmpty property="msgWtr" prepend="AND">
+								  MSG_WTR = #msgWtr#
+							  </isNotEmpty>
+                  
+            ORDER BY MSG_DT) A
+		 ) B
+
+	</select>
+
+	<select id="selectMemfl" parameterClass="java.util.HashMap"
+		resultMap="MEM">
+		SELECT * FROM MEM
+		WHERE MEM_ID NOT IN (SELECT FD_LT FROM FD
+							WHERE FD_MEM = #memId#)
+		AND MEM_ID != #memId#
+		AND MEM_WRL_WTR = 'YES'
+		<isNotEmpty property="memNic" prepend="AND">
+			MEM_ID = #memNic#
+		</isNotEmpty>
+	</select>
+	
+	<select id="selectGbkpost" parameterClass="java.util.HashMap"
+		resultMap="GBK">
+		SELECT * FROM GBK
+		WHERE GBK_PT_KID = 'YES'
+		AND GBK_MEM = #gbkMem#
+	</select>
+	
+	<select id="selectGbkcomment" parameterClass="java.util.HashMap"
+		resultMap="GBK">
+		SELECT * FROM GBK
+		WHERE GBK_PT_KID IN (SELECT GBK_NUM FROM GBK)
+		AND GBK_PT_KID = #gbkNum#
+	</select>
+	
+	<select id="selectDiapost" parameterClass="java.util.HashMap"
+		resultMap="DIA">
+		SELECT * FROM DIA
+		WHERE DIA_PT_KID = 'YES'
+		AND DIA_MEM = #diaMem#
+	</select>
+	
+	<select id="selectDiacomment" parameterClass="java.util.HashMap"
+		resultMap="DIA">
+		SELECT * FROM DIA
+		WHERE DIA_PT_KID IN (SELECT DIA_NUM FROM DIA)
+		AND DIA_PT_KID = #diaNum#
+	</select>
+	
+	<select id="selectIMGpost" parameterClass="java.util.HashMap"
+		resultMap="IMG">
+		SELECT * FROM IMG_FRA
+		WHERE IMG_FRA_PT_KID = 'YES'
+		AND IMG_FRA_MEM = #imgfraMem#
+	</select>
+	
+	<select id="selectIMGcomment" parameterClass="java.util.HashMap"
+		resultMap="IMG">
+		SELECT * FROM IMG_FRA
+		WHERE IMG_FRA_PT_KID IN (SELECT IMG_FRA_NUM FROM IMG_FRA)
+		AND IMG_FRA_PT_KID = #imgfraNum#
+	</select>
+
+
+	
+	<select id = "selectFdList" parameterClass = "java.util.HashMap" resultMap="FD">
+		SELECT * FROM FD
+	</select>
+	
+	<select id = "selectMemList" parameterClass = "java.util.HashMap" resultMap="MEM">
+		SELECT * FROM MEM
+	</select>
+	
+	<select id = "selectGbkList" parameterClass = "java.util.HashMap" resultMap="GBK">
+		SELECT B.* FROM(
+						SELECT ROWNUM ,A.* 
+						FROM (SELECT * 
+							  FROM GBK							  
+							  ORDER BY GBK_NUM) A
+		) B
+	</select>
+	
+	<select id = "selectImgList" parameterClass = "java.util.HashMap" resultMap="IMG">
+	SELECT B.* FROM(
+						SELECT ROWNUM ,A.* 
+						FROM (SELECT * 
+							  FROM IMG_FRA							  
+							  ORDER BY IMG_FRA_NUM) A
+		) B
+	</select>
+		
+	<select id = "selectDiaList" parameterClass = "java.util.HashMap" resultMap="DIA">
+		SELECT B.* FROM(
+						SELECT ROWNUM ,A.* 
+						FROM (SELECT * 
+							  FROM DIA							  
+							  ORDER BY DIA_NUM) A
+		) B
+	</select>
+	
+	<select id = "selectHpList" parameterClass = "java.util.HashMap" resultMap="HP">
+		SELECT * FROM HP
+	</select>
+	
+	<select id = "selectMsgList" parameterClass = "java.util.HashMap" resultMap="MSG">
+		SELECT * FROM MSG
+	</select>
+
+
+
+	<insert id="insertCt" parameterClass="java.util.HashMap">
+		INSERT INTO CT
+		(CT_CD,
+		CT_HT, CT_PP, CT_DT, CT_MEM)
+		VALUES
+		(REPLACE('C'||(to_char((S_CT.NEXTVAL),'000')),' ',''),#ctHt#,#ctPp#,SYSDATE,
+		#ctMem#)
+
+	</insert>
+
+	<insert id="insertFd" parameterClass="java.util.HashMap">
+		INSERT INTO FD
+		(FD_REG_NUM,
+		FD_GR, FD_LT, FD_MEM)
+		VALUES
+		(REPLACE('F'||(to_char((S_FD.NEXTVAL),'000')),' ',''), 'nonono', #fdLt#, #fdMem#)
+
+	</insert>
+
+	<insert id="insertMem" parameterClass="java.util.HashMap">
+		INSERT INTO MEM
+		(MEM_ID,
+		MEM_IMG, MEM_EM, MEM_PW, MEM_ADD, MEM_NM, MEM_PHO_NUM, MEM_GN,
+		MEM_NIC, MEM_BIR, MEM_WRL_WTR)
+		VALUES
+		(#memId#, #memImg#, #memEmail#,
+		#memPw#, #memAdd#, #memNm#, #memPhonum#, #memGn#, #memNic#, #memBir#,
+		'YES')
+
+	</insert>
+
+	<insert id="insertGbk" parameterClass="java.util.HashMap">
+		INSERT INTO GBK
+		(GBK_NUM,
+		GBK_CON, GBK_WRI_DT, GBK_MEM, GBK_WRI_MEM, GBK_PT_KID, GBK_HP, GBK_TIT)
+		VALUES
+		(REPLACE('G'||(to_char((S_GBK.NEXTVAL),'000')),' ',''), #gbkCon#, SYSDATE, #gbkMem#, #gbkWrimem#, #gbkPtkid#,
+		#gbkHp#,#gbkTit#)
+	</insert>
+
+	<insert id="insertImg" parameterClass="java.util.HashMap">
+		INSERT INTO IMG_FRA
+		(IMG_FRA_NUM, IMG_FRA_TIT, IMG_FRA_DT, IMG_FRA_IMG, IMG_FRA_CON,
+		IMG_FRA_WRI_MEM, IMG_FRA_PT_KID, IMG_FRA_MEM, IMG_FRA_HP)
+		VALUES
+		(REPLACE('I'||(to_char((S_IMG_FRA.NEXTVAL),'000')),' ',''), #imgfraTit#, SYSDATE, #imgfraImg#, #imgfraCon#,
+		#imgfraWrimem#, #imgfraPtkid#, #imgfraMem#, #imgfraHp#)
+	</insert>
+
+	<insert id="insertDia" parameterClass="java.util.HashMap">
+		INSERT INTO DIA
+		(DIA_NUM, DIA_TIT, DIA_CON	, DIA_WRI_DT, DIA_WRI_MEM , DIA_PT_KID, DIA_MEM, DIA_HP)
+		VALUES
+		(REPLACE('D'||(to_char((S_DIA.NEXTVAL),'000')),' ',''), #diaTit#, #diaCon#, SYSDATE, #diaWrimem#, #diaPtkid#, #diaMem#, #diaHp#)
+	</insert>
+
+	<insert id="insertHp" parameterClass="java.util.HashMap">
+		INSERT INTO HP
+		(HP_CD, HP_CRE_DT, HP_MA_WRT, HP_STT_WRT, HP_CLO, HP_MEM)
+		VALUES
+		(REPLACE('H'||(to_char((S_HP.NEXTVAL),'000')),' ',''), #SYSDATE#, #hpMawrt#, #hpSttwrt#, #hpClo# ,#hpMem#)
+	</insert>
+
+	<insert id="insertMsg" parameterClass="java.util.HashMap">
+		BEGIN insertMsg(#msgSenmem#,#msgRecmem#,#msgHt#,#msgMem#);
+		END;
+	</insert>
+
+	<update id="updateCt" parameterClass="java.util.HashMap" >
+		UPDATE CT
+		SET
+			
+			CT_HT = #ctHt#,
+			CT_PP = #ctPp#,
+			CT_DT = SYSDATE
+		WHERE
+			CT_CD = #ctCd#
+	</update>
+	
+	<update id="updateFd" parameterClass="java.util.HashMap" >
+		UPDATE FD
+		SET
+			
+			FD_GR = #fdGr#,
+			FD_LT = #fdLt#
+		WHERE
+			FD_REG_NUM = #fdRegnum#
+	</update>
+	
+	<update id="updateMem" parameterClass="java.util.HashMap" >
+		UPDATE MEM
+		SET
+			
+			MEM_IMG = #memImg#,
+			MEM_EM = #memEmail#,
+			MEM_PW = #memPw#,
+			MEM_ADD = #memAdd#,
+			MEM_NM = #memNm#,
+			MEM_PHO_NUM = #memPhonum#,
+			MEM_GN = #memGn#,
+			MEM_NIC = #memNic#,
+			MEM_BIR = TO_DATE(SUBSTR(#memBir#,0,10),'YYYY-MM-DD'),
+			MEM_WRL_WTR = #memWrlwtr#
+	
+			
+		WHERE
+			MEM_ID = #memId#
+	</update>
+	
+	<update id="updateGbk" parameterClass="java.util.HashMap" >
+		UPDATE GBK
+		SET
+			
+			GBK_CON = #gbkCon#,
+			GBK_WRI_DT = SYSDATE,
+			GBK_WRI_MEM = #gbkWrimem#,
+			GBK_PT_KID = #gbkPtkid#,
+			GBK_TIT = #gbkTit#
+			
+		WHERE
+			GBK_NUM = #gbkNum#
+	</update>
+	
+	<update id="updateImg" parameterClass="java.util.HashMap" >
+		UPDATE IMG_FRA
+		SET
+			
+			IMG_FRA_TIT = #imgfraTit#,
+			IMG_FRA_DT = SYSDATE,
+			IMG_FRA_IMG = #imgfraImg#,
+			IMG_FRA_CON = #imgfraCon#,
+			IMG_FRA_WRI_MEM = #imgfraWrimem#,
+			IMG_FRA_PT_KID = #imgfraPtkid#
+				
+		WHERE
+			IMG_FRA_NUM = #imgfraNum#
+	</update>
+	
+	<update id="updateDia" parameterClass="java.util.HashMap" >
+		UPDATE DIA
+		SET
+			
+			DIA_TIT = #diaTit#,
+			DIA_CON = #diaCon#,
+			DIA_WRI_DT = SYSDATE,
+			DIA_WRI_MEM = #diaWrimem#,
+			DIA_PT_KID = #diaPtkid#
+			
+		WHERE
+			DIA_NUM = #diaNum#
+	</update>
+	
+	<update id="updateHp" parameterClass="java.util.HashMap" >
+		UPDATE HP
+		SET
+			
+			HP_CRE_DT = SYSDATE,
+			HP_MA_WRT = #hpMawrt#,
+			HP_STT_WRT = #hpSttwrt#,
+			HP_CLO = #hpClo#
+			
+		WHERE
+			HP_CD = #hpCd#
+	</update>
+	
+	<update id="updateMsg" parameterClass="java.util.HashMap" >
+		UPDATE MSG
+		SET
+			
+			MSG_DT = SYSDATE,
+			MSG_SEN_MEM = #msgSenmem#,
+			MSG_REC_MEM = #msgRecmem#,
+			MSG_HT = #msgHt#,
+			MSG_WTR = #msgWtr#
+			
+		WHERE
+			MSG_NUM = #msgNum#
+	</update>
+	
+	<delete id="deleteCt" parameterClass="java.util.HashMap">
+		DELETE 
+		FROM 
+			CT
+		WHERE
+			CT_CD = #ctCd#
+	</delete>
+	
+	<delete id="deleteFd" parameterClass="java.util.HashMap">
+		DELETE 
+		FROM 
+			FD
+		WHERE
+			FD_REG_NUM = #fdRegnum#
+	</delete>
+	
+	<delete id="deleteMem" parameterClass="java.util.HashMap">
+		DELETE 
+		FROM 
+			MEM
+		WHERE
+			MEM_ID = #memId#
+	</delete>
+	
+	<delete id="deleteGbk" parameterClass="java.util.HashMap">
+		DELETE 
+		FROM 
+			GBK
+		WHERE
+			GBK_NUM = #gbkNum#
+	</delete>
+	
+	<delete id="deleteImg" parameterClass="java.util.HashMap">
+		DELETE 
+		FROM 
+			IMG_FRA
+		WHERE
+			IMG_FRA_NUM = #imgfraNum#
+	</delete>
+	
+	<delete id="deleteDia" parameterClass="java.util.HashMap">
+		DELETE 
+		FROM 
+			DIA
+		WHERE
+			DIA_NUM = #diaNum#
+	</delete>
+	
+	<delete id="deleteHp" parameterClass="java.util.HashMap">
+		DELETE 
+		FROM 
+			HP
+		WHERE
+			HP_CD = #hpCd#
+	</delete>
+	
+	<delete id="deleteMsg" parameterClass="java.util.HashMap">
+		DELETE 
+		FROM 
+			MSG
+		WHERE
+			MSG_NUM = #msgNum#
+	</delete>
+	
+	<delete id="deleteFdlt" parameterClass="java.util.HashMap">
+		DELETE 
+		FROM 
+			FD
+		WHERE
+			FD_LT = #fdMem#
+	</delete>
+
+</sqlMap>
